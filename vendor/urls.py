@@ -4,7 +4,7 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.routers import DefaultRouter
 
 router=DefaultRouter()
-router.register("foods",views.FoodView,basename="foods")
+# router.register("foods",views.FoodView,basename="foods")
 router.register("offers",views.OfferView,basename="offers")
 
 urlpatterns=[
@@ -13,5 +13,6 @@ urlpatterns=[
     path("category/add",views.CategoryListCreateView.as_view(),name="category-add"),
     path("category/all",views.CategoryListCreateView.as_view(),name="category-list"),
     
-
 ]+router.urls
+
+

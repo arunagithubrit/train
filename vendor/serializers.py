@@ -5,6 +5,8 @@ from admin1.models import Category,Food,Cart,Offer,Order,Review,Vendor,Customer,
 
 
 class VendorSerializer(serializers.ModelSerializer):
+    id=serializers.CharField(read_only=True)
+    password=serializers.CharField(write_only=True)
 
     class Meta:
         model=Vendor

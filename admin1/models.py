@@ -51,8 +51,7 @@ class Category(models.Model):
     
 class Food(models.Model):
     name=models.CharField(max_length=200)
-    vendors = models.ForeignKey(Vendor,on_delete=models.CASCADE,null=True)
-    category=models.ForeignKey(Category,on_delete=models.CASCADE,null=True)
+    category=models.ForeignKey(Category,on_delete=models.CASCADE)
     image=models.ImageField(upload_to="images")
     price=models.PositiveIntegerField()
     description=models.CharField(max_length=500)
@@ -63,7 +62,7 @@ class Food(models.Model):
 
 class Offer(models.Model):
     food=models.ForeignKey(Food,on_delete=models.CASCADE)
-    vendors = models.ForeignKey(Vendor,on_delete=models.CASCADE,null=True)
+    vendors = models.ForeignKey(Vendor,on_delete=models.CASCADE)
     price=models.PositiveIntegerField()
     start_date=models.DateTimeField()
     due_date=models.DateTimeField()

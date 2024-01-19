@@ -58,8 +58,14 @@ class FoodView(ViewSet):
             return Response(data=serializer.errors)
         
     def list(self,request,*args,**kwargs):
-        qs=Food.objects.all()
+        qs=Food.objects.filter(vendors=request.user)
         serializer=FoodSerializer(qs,many=True)
+        return Response(data=serializer.data)
+    
+    def retrieve(self,request,*args,**kwargs):
+        id=kwargs.get("pk")
+        qs=Food.objects.get(id=id)
+        serializer=FoodSerializer(qs)
         return Response(data=serializer.data)
         
     
