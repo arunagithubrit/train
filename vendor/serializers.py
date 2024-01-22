@@ -22,20 +22,21 @@ class VendorSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         return Vendor.objects.create_user(**validated_data)
     
-class FoodSerializer(serializers.ModelSerializer):
-    id=serializers.CharField(read_only=True)
-    category=serializers.CharField(read_only=True)
-    class Meta:
-        model = Food
-        fields = '__all__'
-    
 class CategorySerializer(serializers.ModelSerializer):
     id=serializers.CharField(read_only=True)
-    food_list=FoodSerializer(many=True,read_only=True)
     is_active=serializers.BooleanField(read_only=True)
     class Meta:
         model = Category
-        fields =["id","name","is_active","food_list"]
+        fields =["id","name","is_active"]
+
+
+class FoodSerializer(serializers.ModelSerializer):
+    id=serializers.CharField(read_only=True)
+    category=serializers.CharField(read_only=True)
+    is_active=serializers.BooleanField(read_only=True)
+    class Meta:
+        model = Food
+        fields = ["id","name","description","price","image","is_active","category"]
     
 
 

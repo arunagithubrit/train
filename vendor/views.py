@@ -85,7 +85,7 @@ class CategoryView(ViewSet):
         vendor=request.user.id
         vendor_object=Vendor.objects.get(id=vendor) 
         if serializer.is_valid():
-            serializer.save(category=category_obj,vendor=vendor_object)
+            serializer.save(category=category_obj,vendor=vendor_object,is_active=True)
             return Response(data=serializer.data)
         else:
             return Response(data=serializer.errors)

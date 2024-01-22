@@ -49,17 +49,13 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
-    
-    @property
-    def food_list(self):
-        qs=Food.objects.all()
-        return qs
+
         
     
 class Food(models.Model):
     name=models.CharField(max_length=200)
     vendor=models.ForeignKey(Vendor,on_delete=models.CASCADE,null=True)
-    category=models.ForeignKey(Category,on_delete=models.CASCADE,related_name="food_list")
+    category=models.ForeignKey(Category,on_delete=models.CASCADE)
     image=models.ImageField(upload_to="images")
     price=models.PositiveIntegerField()
     description=models.CharField(max_length=500)
