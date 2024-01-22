@@ -10,7 +10,7 @@ class VendorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=Vendor
-        fields=["username","email","password","phone","name","description","address","website","logo"]
+        fields=["id","username","email","password","phone","name","description","address","website","logo"]
     # def create(self, validated_data):
     #     user = UserSignup(
     #         email=validated_data['email'],
@@ -25,12 +25,14 @@ class VendorSerializer(serializers.ModelSerializer):
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = '__all__'
+        fields ="__all__"
     
 
 class FoodSerializer(serializers.ModelSerializer):
-    image=serializers.CharField(read_only=True)
-    vendors=serializers.CharField(read_only=True)
+    id=serializers.CharField(read_only=True)
+
+    
+    
     category=serializers.CharField(read_only=True)
     class Meta:
         model = Food

@@ -9,7 +9,7 @@ class CustomUser(AbstractUser):
         ('vendor' ,'vendor'),
     ]
     user_type=models.CharField(max_length=50,choices=user_type_choices,default='customer')
-    phone=models.CharField(max_length=10,unique=True)
+    phone=models.CharField(max_length=10)
 
 
 
@@ -22,9 +22,10 @@ class Vendor(CustomUser):
     logo = models.ImageField(upload_to='images',null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
+    
     def __str__(self):
         return self.name
+   
     
 class Customer(CustomUser):
     name=models.CharField(max_length=50)
@@ -42,7 +43,7 @@ class Customer(CustomUser):
 
 
 class Category(models.Model):
-    name=models.CharField(max_length=200,unique=True)
+    name=models.CharField(max_length=200)
     vendors = models.ForeignKey(Vendor,on_delete=models.CASCADE)
     is_active=models.BooleanField(default=True)
 
@@ -51,6 +52,7 @@ class Category(models.Model):
     
 class Food(models.Model):
     name=models.CharField(max_length=200)
+    vendor=models.ForeignKey(Vendor,on_delete=models.CASCADE,null=True)
     category=models.ForeignKey(Category,on_delete=models.CASCADE)
     image=models.ImageField(upload_to="images")
     price=models.PositiveIntegerField()
