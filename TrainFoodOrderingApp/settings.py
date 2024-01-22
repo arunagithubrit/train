@@ -44,7 +44,6 @@ INSTALLED_APPS = [
     'vendor',
     'admin1',
     'rest_framework.authtoken',
-    'allauth',
     
     
     

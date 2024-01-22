@@ -43,12 +43,16 @@ class CategoryView(ViewSet):
     def create(self,request,*args,**kwargs):
         serializer=CategorySerializer(data=request.data)
         vendor_id=request.user.id
+        print(vendor_id)
         vendor_object=Vendor.objects.get(id=vendor_id)
-        if serializer.is_valid():
-            serializer.save(vendors=vendor_object)
-            return Response(data=serializer.data)
+        if vendor_object:
+            if serializer.is_valid():
+                serializer.save(vendors=vendor_object)
+                return Response(data=serializer.data)
+            else:
+                return Response(data=serializer.errors)
         else:
-            return Response(data=serializer.errors)
+            return Response(request,"vendor not found")
         
     def list(self,request,*args,**kwargs):
         vendor_id=request.user.id
@@ -78,12 +82,10 @@ class CategoryView(ViewSet):
         serializer=FoodSerializer(data=request.data)
         cat_id=kwargs.get("pk")
         category_obj=Category.objects.get(id=cat_id)
-        
-        vendor=request.user.vendor
-        print(vendor)
-        
+        vendor=request.user.id
+        vendor_object=Vendor.objects.get(id=vendor) 
         if serializer.is_valid():
-            serializer.save(category=category_obj,vendor=vendor)
+            serializer.save(category=category_obj,vendor=vendor_object)
             return Response(data=serializer.data)
         else:
             return Response(data=serializer.errors)
@@ -97,25 +99,25 @@ class FoodView(ViewSet):
     
         
     def list(self,request,*args,**kwargs):
-        qs=Food.objects.filter(vendor=request.user)
+        qs=Food.objects.filter(vendor=request.user.vendor)
         serializer=FoodSerializer(qs,many=True)
         return Response(data=serializer.data)
     
     def destroy(self,request,*args,**kwargs):
         id=kwargs.get("pk")
         instance=Food.objects.get(id=id)
-        if instance.vendor==request.user:
+        if instance.vendor==request.user.vendor:
             instance.delete()
             return Response(data={"msg":"deleted"})
         else:
             return Response(data={"message":"permission denied"})
 
     
-    # def retrieve(self,request,*args,**kwargs):
-    #     id=kwargs.get("pk")
-    #     qs=Food.objects.get(id=id)
-    #     serializer=FoodSerializer(qs)
-    #     return Response(data=serializer.data)
+    def retrieve(self,request,*args,**kwargs):
+        id=kwargs.get("pk")
+        qs=Food.objects.get(id=id)
+        serializer=FoodSerializer(qs)
+        return Response(data=serializer.data)
         
     
         
