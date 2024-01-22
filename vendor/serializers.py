@@ -43,12 +43,8 @@ class FoodSerializer(serializers.ModelSerializer):
 
 
 class OfferSerializer(serializers.ModelSerializer):
-    id=serializers.CharField(read_only=True)
     food=serializers.CharField(read_only=True)
-    vendors=serializers.CharField(read_only=True)
-    price=serializers.CharField(read_only=True)
-    start_date=serializers.CharField(read_only=True)
-    due_date=serializers.CharField(read_only=True)
+    id=serializers.CharField(read_only=True)
     class Meta:
         model = Offer
-        fields = '__all__'
+        fields = ["id","food","price","start_date","due_date"]

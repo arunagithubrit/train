@@ -10,6 +10,7 @@ from rest_framework import permissions
 from rest_framework import serializers
 
 
+
 from django.shortcuts import render
 from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
@@ -76,6 +77,7 @@ class CategoryView(ViewSet):
         category.is_active = False
         category.save()
         return Response(data={"message": "category is now inactive"})
+    
     # http://127.0.0.1:8000/vendor/foods/1
     @action(methods=["post"],detail=True)
     def add_food(self,request,*args,**kwargs):
@@ -96,12 +98,22 @@ class FoodView(ViewSet):
     permission_classes=[permissions.IsAuthenticated]
     serializer_class = FoodSerializer
 
-    
-        
+   
     def list(self,request,*args,**kwargs):
         qs=Food.objects.filter(vendor=request.user.vendor)
         serializer=FoodSerializer(qs,many=True)
         return Response(data=serializer.data)
+    
+    def update(self,request,*args,**kwargs): 
+        id=kwargs.get("pk")
+        obj=Food.objects.get(id=id)
+        serializer=FoodSerializer(data=request.data,instance=obj)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data)
+        else:
+            return Response(data=serializer.errors)
+
     
     def destroy(self,request,*args,**kwargs):
         id=kwargs.get("pk")
@@ -118,42 +130,41 @@ class FoodView(ViewSet):
         qs=Food.objects.get(id=id)
         serializer=FoodSerializer(qs)
         return Response(data=serializer.data)
-        
     
+    @action(methods=["post"],detail=True)
+    def offer_add(self,request,*args,**kwargs):
+        serializer=OfferSerializer(data=request.data)
+        food_id=kwargs.get("pk")
+        food_obj=Food.objects.get(id=food_id)
+        vendor=request.user.id
+        vendor_object=Vendor.objects.get(id=vendor) 
+        if serializer.is_valid():
+            serializer.save(food=food_obj,vendors=vendor_object)
+            return Response(data=serializer.data)
+        else:
+            return Response(data=serializer.errors)
         
 
+class OfferView(ViewSet):
+    # authentication_classes=[authentication.BasicAuthentication]
+    authentication_classes=[authentication.TokenAuthentication]
+    permission_classes=[permissions.IsAuthenticated]
+    serializer_class=OfferSerializer
 
 
-# class OfferView(ViewSet):
-#     # authentication_classes=[authentication.BasicAuthentication]
-#     authentication_classes=[authentication.TokenAuthentication]
-#     permission_classes=[permissions.IsAuthenticated]
-#     serializer_class=OfferSerializer
-# # http://127.0.0.1:8000/vendor/foods/2/offers
-#     def create(self,request,*args,**kwargs):
-#         vid=kwargs.get("pk")
-#         varient_obj=Food.objects.get(id=vid)
-#         user=request.user
-#         serializer=OfferSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save(food=varient_obj,vendors=user)
-#             return Response(data=serializer.data)
-#         else:
-#             return Response(data=serializer.errors)
-
-    # def list(self,request,*args,**kwargs):
-    #     qs=Carts.objects.filter(user=request.user)
-    #     serializer=CartSerializer(qs,many=True)
-    #     return Response(data=serializer.data)
+    def list(self,request,*args,**kwargs):
+        qs=Offer.objects.filter(vendors=request.user.vendor)
+        serializer=OfferSerializer(qs,many=True)
+        return Response(data=serializer.data)
     
-    # def destroy(self,request,*args,**kwargs):
-    #     id=kwargs.get("pk")
-    #     instance=Carts.objects.get(id=id)
-    #     if instance.user==request.user:
-    #         instance.delete()
-    #         return Response(data={"msg":"deleted"})
-    #     else:
-    #         return Response(data={"message":"permission denied"})
+    def destroy(self,request,*args,**kwargs):
+        id=kwargs.get("pk")
+        instance=Offer.objects.get(id=id)
+        if instance.vendors==request.user.vendor:
+            instance.delete()
+            return Response(data={"msg":"offer deleted"})
+        else:
+            return Response(data={"message":"permission denied"})
 
     
  
