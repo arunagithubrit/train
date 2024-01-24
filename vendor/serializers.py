@@ -32,9 +32,10 @@ class CategorySerializer(serializers.ModelSerializer):
 class OfferSerializer(serializers.ModelSerializer):
     food=serializers.CharField(read_only=True)
     id=serializers.CharField(read_only=True)
+    status=serializers.CharField(read_only=True)
     class Meta:
         model = Offer
-        fields = ["id","food","price","start_date","due_date"]
+        fields="__all__"
 
 
 class FoodSerializer(serializers.ModelSerializer):

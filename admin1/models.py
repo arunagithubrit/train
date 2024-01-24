@@ -77,13 +77,19 @@ class Offer(models.Model):
     price=models.PositiveIntegerField()
     start_date=models.DateTimeField()
     due_date=models.DateTimeField()
+    options=(
+        ("active","active"),
+        ("expired","expired")
+    )
+    status=models.CharField(max_length=200,choices=options,default="active")
     
-    # @property
-    # def expired(self):
-    #     return self.due_date > timezone.now()
+    
+    @property
+    def status(self):
+        return "expired" if self.due_date < timezone.now() else "active"
+    
     
 class Cart(models.Model):
-    
     user=models.OneToOneField(Customer,on_delete=models.CASCADE,related_name="cart")
     options=(
         ("in-cart","in-cart"),
@@ -96,6 +102,7 @@ class Cart(models.Model):
     updated_at=models.DateTimeField(auto_now=True)
     is_active=models.BooleanField(default=True)
 
+
 class CartItem(models.Model):
     cart=models.ForeignKey(Cart,on_delete=models.CASCADE,related_name="cartitem") 
     food=models.ForeignKey(Food,on_delete=models.CASCADE)
@@ -103,7 +110,6 @@ class CartItem(models.Model):
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
     is_active=models.BooleanField(default=True)
-
 
 
 class Order(models.Model):

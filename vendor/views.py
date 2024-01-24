@@ -177,25 +177,7 @@ class OfferView(ViewSet):
         else:
             return Response(data={"message":"permission denied"})
         
-# class OrderView(ViewSet):
-#     authentication_classes=[authentication.TokenAuthentication]
-#     permission_classes=[permissions.IsAuthenticated]
-#     serializer_class = OrderSerializer
 
-   
-#     def list(self,request,*args,**kwargs):
-#         qs=Order.objects.filter()
-#         serializer=ReviewSerializer(qs,many=True)
-#         return Response(data=serializer.data)
-    
-#     def retrieve(self,request,*args,**kwargs):
-#         raise serializers.ValidationError("method not allowd")
-#     def create(self,request,*args,**kwargs):
-#         raise serializers.ValidationError("method not allowd")
-#     def update(self,request,*args,**kwargs):
-#         raise serializers.ValidationError("method not allowd")
-#     def destroy(self,request,*args,**kwargs):
-#         raise serializers.ValidationError("method not allowd")
 
     
  
