@@ -15,10 +15,9 @@ from django.utils import timezone
 
 from django.shortcuts import render
 from rest_framework.response import Response
-from django.views.decorators.csrf import csrf_exempt
 
 
-# Create your views here.
+
 
 class VendorCreationView(APIView):
     def post(self,request,*args,**kwargs):

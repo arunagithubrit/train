@@ -17,7 +17,6 @@ class CustomUser(AbstractUser):
 class Vendor(CustomUser):
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=200,null=True)
-    # email = models.EmailField(blank=True, null=True)
     address = models.CharField(max_length=200,null=True)
     website = models.URLField(null=True)
     logo = models.ImageField(upload_to='images',null=True)
@@ -31,12 +30,9 @@ class Vendor(CustomUser):
 class Customer(CustomUser):
     name=models.CharField(max_length=50)
     date_of_birth = models.DateField(null=True, blank=True)
-    profile_picture = models.ImageField(upload_to='images', null=True, blank=True)
+    profile_picture = models.ImageField(upload_to='images', null=True)
     bio = models.TextField(blank=True)
     address = models.CharField(max_length=255, blank=True)
-
-
-    # Add other fields based on your requirements
 
     def __str__(self):
         return self.name
