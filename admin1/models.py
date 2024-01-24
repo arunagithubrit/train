@@ -2,6 +2,7 @@ from django.db import models
 
 # Create your models here.
 from django.contrib.auth.models import AbstractUser
+from django.utils import timezone
 
 class CustomUser(AbstractUser):
     user_type_choices=[
@@ -63,13 +64,23 @@ class Food(models.Model):
 
     def __str__(self):
         return self.name
-
+    
+    # @property
+    # def offer_price(self):
+    #     qs=Offer.objects.all()
+    #     return qs
+    
+    
 class Offer(models.Model):
-    food=models.ForeignKey(Food,on_delete=models.CASCADE)
+    food=models.ForeignKey(Food,on_delete=models.CASCADE,related_name="offer_price")
     vendors = models.ForeignKey(Vendor,on_delete=models.CASCADE)
     price=models.PositiveIntegerField()
     start_date=models.DateTimeField()
     due_date=models.DateTimeField()
+    
+    # @property
+    # def expired(self):
+    #     return self.due_date > timezone.now()
     
 class Cart(models.Model):
     

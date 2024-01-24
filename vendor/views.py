@@ -1,13 +1,15 @@
 from django.shortcuts import render
 from rest_framework import mixins,generics
-from vendor.serializers import VendorSerializer,CategorySerializer,FoodSerializer,OfferSerializer
-from admin1.models import Vendor,Category,Food,Offer
+from vendor.serializers import VendorSerializer,CategorySerializer,FoodSerializer,OfferSerializer,ReviewSerializer,OrderSerializer
+from admin1.models import Vendor,Category,Food,Offer,Review,Order
 from rest_framework.views import APIView
+from rest_framework.generics import ListAPIView
 from rest_framework.viewsets import ModelViewSet,ViewSet
 from rest_framework.decorators import action
 from rest_framework import authentication
 from rest_framework import permissions
 from rest_framework import serializers
+from django.utils import timezone
 
 
 
@@ -28,13 +30,6 @@ class VendorCreationView(APIView):
             return Response(data=serializer.errors)
 
 
-
-
-# class CategoryListCreateView(generics.ListCreateAPIView):
-#     authentication_classes=[authentication.TokenAuthentication]
-#     permission_classes=[permissions.IsAuthenticated]
-#     queryset = Category.objects.all()
-#     serializer_class = CategorySerializer
 
 class CategoryView(ViewSet):
     authentication_classes=[authentication.TokenAuthentication]
@@ -143,6 +138,22 @@ class FoodView(ViewSet):
             return Response(data=serializer.data)
         else:
             return Response(data=serializer.errors)
+    
+    @action(methods=["get"],detail=True)  
+    def review_list(self,request,*args,**kwargs):
+        food_id=kwargs.get("pk")
+        food_obj=Food.objects.get(id=food_id)
+        qs=Review.objects.filter(food=food_obj)
+        serializer=ReviewSerializer(qs,many=True)
+        return Response(data=serializer.data)
+    
+    @action(methods=["get"],detail=True)
+    def order_list(self,request,*args,**kwargs):
+        food_id=kwargs.get("pk")
+        food_obj=Food.objects.get(id=food_id)
+        qs=Order.objects.filter(food=food_obj)
+        serializer=OrderSerializer(qs,many=True)
+        return Response(data=serializer.data)
         
 
 class OfferView(ViewSet):
@@ -153,7 +164,7 @@ class OfferView(ViewSet):
 
 
     def list(self,request,*args,**kwargs):
-        qs=Offer.objects.filter(vendors=request.user.vendor)
+        qs=Offer.objects.filter(vendors=request.user.vendor,due_date__gte=timezone.now())
         serializer=OfferSerializer(qs,many=True)
         return Response(data=serializer.data)
     
@@ -165,6 +176,26 @@ class OfferView(ViewSet):
             return Response(data={"msg":"offer deleted"})
         else:
             return Response(data={"message":"permission denied"})
+        
+# class OrderView(ViewSet):
+#     authentication_classes=[authentication.TokenAuthentication]
+#     permission_classes=[permissions.IsAuthenticated]
+#     serializer_class = OrderSerializer
+
+   
+#     def list(self,request,*args,**kwargs):
+#         qs=Order.objects.filter()
+#         serializer=ReviewSerializer(qs,many=True)
+#         return Response(data=serializer.data)
+    
+#     def retrieve(self,request,*args,**kwargs):
+#         raise serializers.ValidationError("method not allowd")
+#     def create(self,request,*args,**kwargs):
+#         raise serializers.ValidationError("method not allowd")
+#     def update(self,request,*args,**kwargs):
+#         raise serializers.ValidationError("method not allowd")
+#     def destroy(self,request,*args,**kwargs):
+#         raise serializers.ValidationError("method not allowd")
 
     
  

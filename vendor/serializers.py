@@ -28,6 +28,13 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields =["id","name","is_active"]
+        
+class OfferSerializer(serializers.ModelSerializer):
+    food=serializers.CharField(read_only=True)
+    id=serializers.CharField(read_only=True)
+    class Meta:
+        model = Offer
+        fields = ["id","food","price","start_date","due_date"]
 
 
 class FoodSerializer(serializers.ModelSerializer):
@@ -37,14 +44,20 @@ class FoodSerializer(serializers.ModelSerializer):
     class Meta:
         model = Food
         fields = ["id","name","description","price","image","is_active","category"]
+        
+class ReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Review
+        fields="__all__"
+        
+class OrderSerializer(serializers.ModelSerializer):
+    id=serializers.CharField(read_only=True)
+    class Meta:
+        model=Order
+        fields="__all__"
+        
     
 
 
 
 
-class OfferSerializer(serializers.ModelSerializer):
-    food=serializers.CharField(read_only=True)
-    id=serializers.CharField(read_only=True)
-    class Meta:
-        model = Offer
-        fields = ["id","food","price","start_date","due_date"]
