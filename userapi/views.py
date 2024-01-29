@@ -46,7 +46,7 @@ class FoodView(ViewSet):
     def add_to_cart(self,request,*args,**kwargs):
         id=kwargs.get("pk")
         food_object=Food.objects.get(id=id) 
-        cart_object=request.user.cart
+        cart_object=request.user.customer.cart
 
         serializer=CartItemsSerializer(data=request.data)
         
