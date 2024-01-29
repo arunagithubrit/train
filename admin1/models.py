@@ -3,6 +3,8 @@ from django.db import models
 # Create your models here.
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
+from django.db.models.signals import post_save
+from django.contrib.auth.models import User
 
 class CustomUser(AbstractUser):
     user_type_choices=[
@@ -133,6 +135,15 @@ class Review(models.Model):
     food=models.ForeignKey(Food,null=True,on_delete=models.SET_NULL)
     rating=models.PositiveIntegerField(validators=[MinValueValidator(1),MaxValueValidator(5)])
     comment=models.CharField(max_length=300)
+    
+    
+def create_cart(sender,created,instance,**kwargs):
+    if created:
+        Cart.objects.create(user=instance)
+
+
+
+post_save.connect(create_cart,sender=Customer)
 
 
 
