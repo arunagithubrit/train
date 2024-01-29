@@ -63,10 +63,7 @@ class Food(models.Model):
     def __str__(self):
         return self.name
     
-    # @property
-    # def offer_price(self):
-    #     qs=Offer.objects.all()
-    #     return qs
+
     
     
 class Offer(models.Model):
@@ -99,6 +96,11 @@ class Cart(models.Model):
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
     is_active=models.BooleanField(default=True)
+    
+    @property
+    def cartitems(self):
+        qs=self.cartitem.all()
+        return qs
 
 
 class CartItem(models.Model):
@@ -108,12 +110,14 @@ class CartItem(models.Model):
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
     is_active=models.BooleanField(default=True)
+    
+
 
 
 class Order(models.Model):
     user=models.ForeignKey(Customer,on_delete=models.CASCADE)
     train_no=models.CharField(max_length=100)
-    food=models.ForeignKey(Food,on_delete=models.CASCADE)
+    cart=models.ForeignKey(Cart,on_delete=models.CASCADE,null=True)
     options=(
       
         ("order-placed","order-placed"),

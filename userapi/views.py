@@ -51,9 +51,24 @@ class FoodView(ViewSet):
         serializer=CartItemsSerializer(data=request.data)
         
         if serializer.is_valid():
-            serializer.save(cart=cart_object,food=food_object)
+            serializer.save(cart=cart_object,food=food_object,is_active=True)
             return Response(data=serializer.data)
         return Response(data=serializer.errors)
+    
+    @action(methods=["post"],detail=True)
+    def add_review(self,request,*args,**kwargs):
+        id=kwargs.get("pk")
+        food_object=Food.objects.get(id=id) 
+        user=request.user.customer
+        serializer=ReviewSerializer(data=request.data)
+        
+
+        if serializer.is_valid():
+            serializer.save(user=user,food=food_object)
+            return Response(data=serializer.data)
+        return Response(data=serializer.errors)
+
+        
     
 class CartView(ViewSet):
     authentication_classes=[authentication.TokenAuthentication]
@@ -61,10 +76,22 @@ class CartView(ViewSet):
     serializer_class = CartSerializer
         
     def list(self,request,*args,**kwargs):
-        user=request.user
+        user=request.user.customer
         qs=Cart.objects.filter(user=user)
         serializer=CartSerializer(qs,many=True)
         return Response(data=serializer.data)
+    
+    @action(methods=["post"],detail=True)
+    def place_order(self,request,*args,**kwargs):
+        cart_object=request.user.customer.cart
+        user=request.user.customer
+        serializer=ReviewSerializer(data=request.data)
+        
+
+        if serializer.is_valid():
+            serializer.save(user=user,cart=cart_object)
+            return Response(data=serializer.data)
+        return Response(data=serializer.errors)
     
 
 

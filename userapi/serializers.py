@@ -7,7 +7,7 @@ class CustomerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=Customer
-        fields=["id","username","date_of_birth","profile_picture","bio","address","password"]
+        fields=["id","name","phone","username","date_of_birth","profile_picture","bio","address","password"]
 
     def create(self, validated_data):
         return Customer.objects.create_user(**validated_data)
@@ -23,17 +23,19 @@ class FoodSerializer(serializers.ModelSerializer):
         model=Food
         fields="__all__"
         
-class CartSerializer(serializers.ModelSerializer):
-    class Meta:
-        model=Cart
-        fields="__all__"
-        
 class CartItemsSerializer(serializers.ModelSerializer):
     food=FoodSerializer(read_only=True)
     class Meta:
         model=CartItem
         fields="__all__"
         read_only_fields=["cart","food","created_at","updated_at"]
+        
+class CartSerializer(serializers.ModelSerializer):
+    cartitems=CartItemsSerializer(many=True,read_only=True)
+    class Meta:
+        model=Cart
+        fields=["id","cartitems","user","status","created_at","updated_at","is_active"]
+        
         
         
 class OrderSerializer(serializers.ModelSerializer):
@@ -42,6 +44,7 @@ class OrderSerializer(serializers.ModelSerializer):
         fields="__all__"
 
 class ReviewSerializer(serializers.ModelSerializer):
+    user=serializers.CharField(read_only=True)
     class Meta:
         model=Review
-        fields="__all__"
+        fields=["user","food","rating","comment"]
