@@ -61,17 +61,28 @@ class FoodView(ViewSet):
         return Response(data=serializer.data)
     
     @action(methods=["post"],detail=True)
-    def add_to_cart(self,request,*args,**kwargs):
-        id=kwargs.get("pk")
-        food_object=Food.objects.get(id=id) 
-        cart_object=request.user.customer.cart
+    def add_to_cart(self, request, *args, **kwargs):
+        food_id = kwargs.get("pk")
+        food_object = Food.objects.get(id=food_id)
+        cart_object = request.user.customer.cart
 
-        serializer=CartItemsSerializer(data=request.data)
+        existing_cart_item=cart_object.cartitem.filter(food=food_object).first()
         
-        if serializer.is_valid():
-            serializer.save(cart=cart_object,food=food_object,is_active=True)
-            return Response(data=serializer.data)
-        return Response(data=serializer.errors)
+        if existing_cart_item:
+            existing_cart_item.quantity+= 1  
+            existing_cart_item.save()
+            serializer=CartItemsSerializer(existing_cart_item)
+            return Response(data=serializer.data,status=status.HTTP_200_OK)
+        else:
+            serializer=CartItemsSerializer(data=request.data)
+            
+            if serializer.is_valid():
+                serializer.save(cart=cart_object,food=food_object,is_active=True)
+                return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+            
+            return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+
     
     @action(methods=["post"],detail=True)
     def add_review(self,request,*args,**kwargs):
