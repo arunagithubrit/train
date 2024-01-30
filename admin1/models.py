@@ -153,6 +153,10 @@ class Order(models.Model):
     expected_date=models.DateField(null=True)
     coach_no=models.CharField(max_length=100)
     seatno=models.CharField(max_length=100,unique=True)
+    amount = models.IntegerField(null=True,blank=True)
+    razorpay_order_id = models.CharField(max_length=255, null=True, blank=True)
+
+
 
 from django.core.validators import MinValueValidator,MaxValueValidator
 

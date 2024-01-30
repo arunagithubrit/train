@@ -135,5 +135,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS=True
 
+RAZORPAY_API_KEY ='rzp_test_dGbzyUivWJNxDV'
+RAZORPAY_API_SECRET='4iYJQWiT6WT7xYcl1JdHSD3a'
+
 
 

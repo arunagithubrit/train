@@ -45,7 +45,7 @@ class OrderSerializer(serializers.ModelSerializer):
     expected_date=serializers.CharField(read_only=True)
     class Meta:
         model=Order
-        fields=["cart","train_no","seatno","coach_no","orderd_date","expected_date","status"]
+        fields=["cart","train_no","seatno","coach_no","orderd_date","expected_date","status","razorpay_order_id","amount"]
 
 class ReviewSerializer(serializers.ModelSerializer):
     user=serializers.CharField(read_only=True)
