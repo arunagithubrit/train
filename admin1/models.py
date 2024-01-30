@@ -1,4 +1,6 @@
 from django.db import models
+# from django.contrib.gis.db import models
+import requests
 
 # Create your models here.
 from django.contrib.auth.models import AbstractUser
@@ -35,9 +37,29 @@ class Customer(CustomUser):
     profile_picture = models.ImageField(upload_to='images', null=True)
     bio = models.TextField(blank=True)
     address = models.CharField(max_length=255, blank=True)
+    # location = models.PointField(blank=True, null=True)
 
     def __str__(self):
         return self.name
+    
+
+    # def save(self, *args, **kwargs):
+    #     if not self.location:
+    #         self.location = self.geocode_address(self.address)
+    #     super().save(*args, **kwargs)
+
+    # def geocode_address(self, address):
+    #     api_key = 'YOUR_GOOGLE_MAPS_API_KEY'
+    #     base_url = 'https://maps.googleapis.com/maps/api/geocode/json'
+    #     params = {'address': address, 'key': api_key}
+    #     response = requests.get(base_url, params=params)
+    #     data = response.json()
+
+    #     if data['status'] == 'OK':
+    #         location = data['results'][0]['geometry']['location']
+    #         return Point(location['lng'], location['lat'])
+    #     else:
+    #         return None
    
 
 

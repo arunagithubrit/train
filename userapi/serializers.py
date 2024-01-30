@@ -39,9 +39,13 @@ class CartSerializer(serializers.ModelSerializer):
         
         
 class OrderSerializer(serializers.ModelSerializer):
+    cart=serializers.CharField(read_only=True)
+    status=serializers.CharField(read_only=True)
+    orderd_date=serializers.CharField(read_only=True)
+    expected_date=serializers.CharField(read_only=True)
     class Meta:
         model=Order
-        fields="__all__"
+        fields=["cart","train_no","seatno","coach_no","orderd_date","expected_date","status"]
 
 class ReviewSerializer(serializers.ModelSerializer):
     user=serializers.CharField(read_only=True)

@@ -85,7 +85,7 @@ class CartView(ViewSet):
     def place_order(self,request,*args,**kwargs):
         cart_object=request.user.customer.cart
         user=request.user.customer
-        serializer=ReviewSerializer(data=request.data)
+        serializer=OrderSerializer(data=request.data)
         
 
         if serializer.is_valid():
@@ -93,6 +93,7 @@ class CartView(ViewSet):
             return Response(data=serializer.data)
         return Response(data=serializer.errors)
     
+
 
 
 
