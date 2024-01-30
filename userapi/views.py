@@ -69,10 +69,11 @@ class FoodView(ViewSet):
         existing_cart_item=cart_object.cartitem.filter(food=food_object).first()
         
         if existing_cart_item:
-            existing_cart_item.quantity+= 1  
+            new_quantity=int(request.data.get('quantity',1))
+            existing_cart_item.quantity+=new_quantity
             existing_cart_item.save()
             serializer=CartItemsSerializer(existing_cart_item)
-            return Response(data=serializer.data,status=status.HTTP_200_OK)
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
         else:
             serializer=CartItemsSerializer(data=request.data)
             
