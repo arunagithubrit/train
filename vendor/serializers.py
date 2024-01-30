@@ -33,6 +33,7 @@ class OfferSerializer(serializers.ModelSerializer):
     food=serializers.CharField(read_only=True)
     id=serializers.CharField(read_only=True)
     status=serializers.CharField(read_only=True)
+    vendors=serializers.CharField(read_only=True)
     class Meta:
         model = Offer
         fields="__all__"

@@ -98,7 +98,7 @@ class Offer(models.Model):
         ("active","active"),
         ("expired","expired")
     )
-    status=models.CharField(max_length=200,choices=options,default="active")
+    offer_status=models.CharField(max_length=200,choices=options,default="active")
     
     
     @property
@@ -123,6 +123,12 @@ class Cart(models.Model):
     def cartitems(self):
         qs=self.cartitem.all()
         return qs
+    
+    @property
+    def calculate_total_amount(self):
+        total_amount = sum(item.total_amount for item in self.cartitem.all())
+        return total_amount
+    
 
 
 class CartItem(models.Model):
@@ -132,6 +138,22 @@ class CartItem(models.Model):
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
     is_active=models.BooleanField(default=True)
+    
+    @property
+    def total_amount(self):
+        if self.is_active_offer():
+            return self.quantity * self.food.price - self.get_offer_price()
+        else:
+            return self.quantity * self.food.price
+
+    def is_active_offer(self):
+        active_offer = Offer.objects.filter(food=self.food,offer_status="active").first()
+        return active_offer is not None
+
+    def get_offer_price(self):
+        active_offer = Offer.objects.filter(food=self.food,offer_status="active").first()
+        return active_offer.price if active_offer else 0
+        
     
 
 
@@ -153,7 +175,7 @@ class Order(models.Model):
     expected_date=models.DateField(null=True)
     coach_no=models.CharField(max_length=100)
     seatno=models.CharField(max_length=100,unique=True)
-    amount = models.IntegerField(null=True,blank=True)
+    order_amount = models.CharField(max_length=100,null=True,blank=True)
     razorpay_order_id = models.CharField(max_length=255, null=True, blank=True)
 
 

@@ -88,13 +88,14 @@ class CartView(ViewSet):
     def place_order(self, request, *args, **kwargs):
         cart_object = request.user.customer.cart
         user = request.user.customer
+        amount = cart_object.calculate_total_amount
         serializer = OrderSerializer(data=request.data)
 
         if serializer.is_valid():
-            order = serializer.save(user=user, cart=cart_object)
+            order = serializer.save(user=user, cart=cart_object, order_amount=amount)
 
             try:
-                order_amount = int(order.amount)
+                order_amount = int(order.order_amount)
                 order_data = {
                     'amount': order_amount,
                     'currency': 'INR',
@@ -105,18 +106,21 @@ class CartView(ViewSet):
                 order_response = razorpay_client.order.create(order_data)
                 razorpay_order_id = order_response['id']
 
-
                 order.razorpay_order_id = razorpay_order_id
                 order.save()
 
-                return Response({'razorpay_order_id': razorpay_order_id, 'order_id': order.id ,'amount':order_amount}, status=status.HTTP_201_CREATED)
+                user_info = {'name': user.name, 'phone': user.phone}
+                # cart_info = {'id': cart_object.id, 'status': cart_object.status, 'total_amount': amount}
+
+                return Response({
+                    'razorpay_order_id': razorpay_order_id,
+                    'order_id': order.id,
+                    'amount': order_amount,
+                    'user': user_info,
+                    # 'cart': cart_info
+                }, status=status.HTTP_201_CREATED)
             except Exception as e:
                 print(e)
                 return Response({'error': 'Error processing payment'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-
-
-

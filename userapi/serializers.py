@@ -32,9 +32,10 @@ class CartItemsSerializer(serializers.ModelSerializer):
         
 class CartSerializer(serializers.ModelSerializer):
     cartitems=CartItemsSerializer(many=True,read_only=True)
+    total_amount =CartItemsSerializer(read_only=True)
     class Meta:
         model=Cart
-        fields=["id","cartitems","user","status","created_at","updated_at","is_active"]
+        fields=["id","cartitems","user","total_amount","status","created_at","updated_at","is_active"]
         
         
         
@@ -45,7 +46,7 @@ class OrderSerializer(serializers.ModelSerializer):
     expected_date=serializers.CharField(read_only=True)
     class Meta:
         model=Order
-        fields=["cart","train_no","seatno","coach_no","orderd_date","expected_date","status","razorpay_order_id","amount"]
+        fields=["cart","train_no","seatno","coach_no","orderd_date","expected_date","status","razorpay_order_id","order_amount"]
 
 class ReviewSerializer(serializers.ModelSerializer):
     user=serializers.CharField(read_only=True)
