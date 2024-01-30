@@ -1,6 +1,6 @@
 from django.shortcuts import render
-from admin1.models import Customer,Food,Review,Order,Cart,CartItem,Category
-from userapi.serializers import CustomerSerializer,CategorySerializer,FoodSerializer,CartSerializer,CartItemsSerializer,ReviewSerializer,OrderSerializer
+from admin1.models import Customer,Food,Review,Order,Cart,CartItem,Category,Vendor
+from userapi.serializers import CustomerSerializer,CategorySerializer,VendorSerializer,FoodSerializer,CartSerializer,CartItemsSerializer,ReviewSerializer,OrderSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet,ViewSet
@@ -32,6 +32,22 @@ class CategoryView(ViewSet):
     def list(self,request,*args,**kwargs):
         qs=Category.objects.filter(is_active=True)
         serializer=CategorySerializer(qs,many=True)
+        return Response(data=serializer.data)
+    
+class VendorView(ViewSet):
+    authentication_classes=[authentication.TokenAuthentication]
+    permission_classes=[permissions.IsAuthenticated]
+    serializer_class = VendorSerializer
+        
+    def list(self,request,*args,**kwargs):
+        qs=Vendor.objects.all()
+        serializer=VendorSerializer(qs,many=True)
+        return Response(data=serializer.data)
+    
+    def retrieve(self,request,*args,**kwargs):
+        id=kwargs.get("pk")
+        qs=Vendor.objects.get(id=id)
+        serializer=VendorSerializer(qs)
         return Response(data=serializer.data)
     
 class FoodView(ViewSet):
@@ -83,6 +99,7 @@ class CartView(ViewSet):
         qs = Cart.objects.filter(user=user)
         serializer = CartSerializer(qs, many=True)
         return Response(data=serializer.data)
+    
 
     @action(methods=["post"], detail=True)
     def place_order(self, request, *args, **kwargs):

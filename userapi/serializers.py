@@ -1,4 +1,4 @@
-from admin1.models import Customer,Food,Review,Order,Cart,CartItem,Category
+from admin1.models import Customer,Food,Review,Order,Cart,CartItem,Category,Vendor
 from rest_framework import serializers
 
 class CustomerSerializer(serializers.ModelSerializer):
@@ -17,6 +17,11 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model=Category
         fields="__all__"
+
+class VendorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Vendor
+        fields=["id","name","description","address","logo","website"]
         
 class FoodSerializer(serializers.ModelSerializer):
     class Meta:
@@ -32,10 +37,10 @@ class CartItemsSerializer(serializers.ModelSerializer):
         
 class CartSerializer(serializers.ModelSerializer):
     cartitems=CartItemsSerializer(many=True,read_only=True)
-    total_amount =CartItemsSerializer(read_only=True)
+    cart_total = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)    
     class Meta:
         model=Cart
-        fields=["id","cartitems","user","total_amount","status","created_at","updated_at","is_active"]
+        fields=["id","cartitems","user","cart_total","status","created_at","updated_at","is_active"]
         
         
         

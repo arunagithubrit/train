@@ -129,6 +129,11 @@ class Cart(models.Model):
         total_amount = sum(item.total_amount for item in self.cartitem.all())
         return total_amount
     
+    @property
+    def cart_total(self):
+        qs=self.calculate_total_amount
+        return qs
+    
 
 
 class CartItem(models.Model):
