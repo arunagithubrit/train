@@ -177,7 +177,6 @@ class Order(models.Model):
     )
     status=models.CharField(max_length=200,choices=options,default="order-placed")
     orderd_date=models.DateTimeField(auto_now_add=True)
-    expected_date=models.DateField(null=True)
     coach_no=models.CharField(max_length=100)
     seatno=models.CharField(max_length=100,unique=True)
     order_amount = models.CharField(max_length=100,null=True,blank=True)
