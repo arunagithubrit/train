@@ -11,6 +11,8 @@ from rest_framework import serializers
 from django.utils import timezone
 import razorpay
 from rest_framework import status
+from django.contrib.auth import logout
+
 
 
 # Create your views here.
@@ -153,3 +155,8 @@ class CartView(ViewSet):
                 return Response({'error': 'Error processing payment'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+def sign_out(request):
+    logout(request)
+    return render("signin")

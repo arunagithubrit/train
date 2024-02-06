@@ -13,6 +13,8 @@ router.register("cart",views.CartView,basename="cart_list")
 urlpatterns = [
     path("register/",views.CustomerCreationView.as_view(),name="signup"),
     path("token/",ObtainAuthToken.as_view(),name="token"),
+    path("logout/",views.sign_out,name="logout"),
+
     
 ] +router.urls
 

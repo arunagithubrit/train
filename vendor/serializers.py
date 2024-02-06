@@ -58,6 +58,10 @@ class OrderSerializer(serializers.ModelSerializer):
         model=Order
         fields="__all__"
         
+class TrainLiveStatusRequestSerializer(serializers.Serializer):
+    id = serializers.CharField()
+    date = serializers.DateField(input_formats=['%d/%m/%Y'])
+        
     
 
 
