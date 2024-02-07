@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework import mixins,generics
-from vendor.serializers import VendorSerializer,CategorySerializer,FoodSerializer,OfferSerializer,ReviewSerializer,OrderSerializer,TrainLiveStatusRequestSerializer
+from vendor.serializers import VendorSerializer,CategorySerializer,FoodSerializer,OfferSerializer,ReviewSerializer,OrderSerializer
 from admin1.models import Vendor,Category,Food,Offer,Review,Order
 from rest_framework.views import APIView,View
 from rest_framework.generics import ListAPIView
@@ -68,8 +68,6 @@ class CategoryView(ViewSet):
         serializer=CategorySerializer(qs)
         return Response(data=serializer.data)
     
-    
-
     
     def destroy(self,request,*args,**kwargs):
         id = kwargs.get("pk")
@@ -162,7 +160,6 @@ class FoodView(ViewSet):
         
 
 class OfferView(ViewSet):
-    # authentication_classes=[authentication.BasicAuthentication]
     authentication_classes=[authentication.TokenAuthentication]
     permission_classes=[permissions.IsAuthenticated]
     serializer_class=OfferSerializer
@@ -182,74 +179,9 @@ class OfferView(ViewSet):
         else:
             return Response(data={"message":"permission denied"})
         
+    # updating
         
-class GetTrainIdView(View):
-    def get(self, request, *args, **kwargs):
-        url = "https://indian-railway-irctc.p.rapidapi.com/getTrainId"
-        train_number = request.GET.get('trainno', '')
-        querystring = {"trainno": train_number}
 
-        headers = {
-            "x-rapid-api": "rapid-api-database",
-            "X-RapidAPI-Key": "7297778c0emsh0efeeaedca5c471p1eeae2jsnd95fc2907057",
-            "X-RapidAPI-Host": "indian-railway-irctc.p.rapidapi.com"
-        }
-
-        try:
-            response = requests.get(url, headers=headers, params=querystring)
-            response.raise_for_status()
-            response_json = response.json()
-        except requests.RequestException as e:
-            return JsonResponse({'error': f'Failed to make API request: {str(e)}'}, status=500)
-        except ValueError:
-            return JsonResponse({'error': 'Failed to parse API response as JSON'}, status=500)
-
-        if isinstance(response_json, dict):
-            train_id = response_json.get('train_id', None)
-
-            if train_id:
-                redirect_url = reverse('get_train_live_status') 
-                redirect_url += f'?id={train_id}'
-                return redirect(redirect_url)
-            else:
-                return JsonResponse({'error': 'Train ID not found in the response'}, status=400)
-        else:
-            return JsonResponse({'error': 'Unexpected API response format'}, status=500)
-        
-               
-class GetTrainLiveStatusView(View):
-    def get(self, request, *args,**kwargs):
-        serializer = TrainLiveStatusRequestSerializer(data=request.GET)
-        if serializer.is_valid():
-            train_id = serializer.validated_data['id']
-            date = serializer.validated_data['date'].strftime('%d-%m-%Y')
-        else:
-            return JsonResponse({'error': 'Invalid request data'}, status=400)
-
-        url = "https://indian-railway-irctc.p.rapidapi.com/getTrainLiveStatusById"
-        querystring = {"id": train_id, "date": date}
-        headers = {
-            "x-rapid-api": "rapid-api-database",
-            "X-RapidAPI-Key": "7297778c0emsh0efeeaedca5c471p1eeae2jsnd95fc2907057",
-            "X-RapidAPI-Host": "indian-railway-irctc.p.rapidapi.com"
-        }
-
-        response = requests.get(url, headers=headers, params=querystring)
-
-        print(f"Request URL: {response.url}")
-        print(f"Request Headers: {response.request.headers}")
-        print(f"Response Status Code: {response.status_code}")
-        print(f"Response: {response.text}")
-
-        if response.status_code == 200:
-            serializer = TrainLiveStatusRequestSerializer(data=response.json())
-            if serializer.is_valid():
-                return JsonResponse(serializer.validated_data)
-            else:
-                return JsonResponse({'error': 'Failed to deserialize API response'}, status=500)
-        else:
-            return JsonResponse({'error': 'Failed to fetch train live status'}, status=response.status_code)
-        
 def sign_out(request):
     logout(request)
     return render("signin")

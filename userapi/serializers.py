@@ -1,4 +1,4 @@
-from admin1.models import Customer,Food,Review,Order,Cart,CartItem,Category,Vendor
+from admin1.models import Customer,Food,Review,Order,Cart,CartItem,Category,Vendor,RestaurantReview
 from rest_framework import serializers
 
 class CustomerSerializer(serializers.ModelSerializer):
@@ -17,11 +17,18 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model=Category
         fields="__all__"
+        
+class RestaurantReviewSerializer(serializers.ModelSerializer):
+    user=serializers.CharField(read_only=True)
+    class Meta:
+        model=RestaurantReview
+        fields=["user","vendor","rating","comment"]
 
 class VendorSerializer(serializers.ModelSerializer):
+    restaurantreview=RestaurantReviewSerializer(many=True,read_only=True)
     class Meta:
         model=Vendor
-        fields=["id","name","description","address","logo","website"]
+        fields=["id","name","description","address","logo","website","restaurantreview"]
         
 class FoodSerializer(serializers.ModelSerializer):
     class Meta:
@@ -58,3 +65,6 @@ class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model=Review
         fields=["user","food","rating","comment"]
+        
+        
+

@@ -29,6 +29,11 @@ class Vendor(CustomUser):
     
     def __str__(self):
         return self.name
+    
+    @property
+    def restaurantreview(self):
+        qs=self.restaurant_review.all()
+        return qs
    
     
 class Customer(CustomUser):
@@ -189,6 +194,13 @@ from django.core.validators import MinValueValidator,MaxValueValidator
 class Review(models.Model):
     user=models.ForeignKey(Customer,on_delete=models.CASCADE)
     food=models.ForeignKey(Food,null=True,on_delete=models.SET_NULL)
+    rating=models.PositiveIntegerField(validators=[MinValueValidator(1),MaxValueValidator(5)])
+    comment=models.CharField(max_length=300)
+    
+    
+class RestaurantReview(models.Model):
+    user=models.ForeignKey(Customer,on_delete=models.CASCADE,related_name="restaurant_review")
+    vendor=models.ForeignKey(Vendor,null=True,on_delete=models.SET_NULL)
     rating=models.PositiveIntegerField(validators=[MinValueValidator(1),MaxValueValidator(5)])
     comment=models.CharField(max_length=300)
     

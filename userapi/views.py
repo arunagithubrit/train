@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from admin1.models import Customer,Food,Review,Order,Cart,CartItem,Category,Vendor
-from userapi.serializers import CustomerSerializer,CategorySerializer,VendorSerializer,FoodSerializer,CartSerializer,CartItemsSerializer,ReviewSerializer,OrderSerializer
+from userapi.serializers import CustomerSerializer,CategorySerializer,VendorSerializer,FoodSerializer,CartSerializer,CartItemsSerializer,ReviewSerializer,OrderSerializer,RestaurantReviewSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet,ViewSet
@@ -52,12 +52,25 @@ class VendorView(ViewSet):
         serializer=VendorSerializer(qs)
         return Response(data=serializer.data)
     
+    @action(methods=["post"],detail=True)
+    def add_restaurantreview(self,request,*args,**kwargs):
+        id=kwargs.get("pk")
+        vendor_object=Vendor.objects.get(id=id) 
+        user=request.user.customer
+        serializer=RestaurantReviewSerializer(data=request.data)
+        
+
+        if serializer.is_valid():
+            serializer.save(user=user,vendor=vendor_object)
+            return Response(data=serializer.data)
+        return Response(data=serializer.errors)
+    
 class FoodView(ViewSet):
     authentication_classes=[authentication.TokenAuthentication]
     permission_classes=[permissions.IsAuthenticated]
     serializer_class = FoodSerializer
         
-    def list(self,request,*args,**kwargs):
+    def list(self,request,*args,**kwargs):  
         qs=Food.objects.filter(is_active=True)
         serializer=FoodSerializer(qs,many=True)
         return Response(data=serializer.data)
@@ -99,8 +112,8 @@ class FoodView(ViewSet):
             serializer.save(user=user,food=food_object)
             return Response(data=serializer.data)
         return Response(data=serializer.errors)
-
-        
+    
+     
 razorpay_client = razorpay.Client(auth=("rzp_test_dGbzyUivWJNxDV", "4iYJQWiT6WT7xYcl1JdHSD3a"))
 
 class CartView(ViewSet):
@@ -140,19 +153,17 @@ class CartView(ViewSet):
                 order.razorpay_order_id = razorpay_order_id
                 order.save()
 
-                user_info = {'name': user.name, 'phone': user.phone}
-                # cart_info = {'id': cart_object.id, 'status': cart_object.status, 'total_amount': amount}
+                user_info={'name':user.name,'phone':user.phone}
 
                 return Response({
                     'razorpay_order_id': razorpay_order_id,
                     'order_id': order.id,
                     'amount': order_amount,
                     'user': user_info,
-                    # 'cart': cart_info
                 }, status=status.HTTP_201_CREATED)
             except Exception as e:
                 print(e)
-                return Response({'error': 'Error processing payment'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                return Response({'error':'Error processing payment'},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
