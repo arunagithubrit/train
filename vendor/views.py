@@ -174,7 +174,7 @@ class OfferView(ViewSet):
     serializer_class=OfferSerializer
 
 
-    def list(self,request,args,*kwargs):
+    def list(self,request,*args,**kwargs):
         qs=Offer.objects.filter(vendors=request.user.vendor,due_date__gte=timezone.now())
         serializer=OfferSerializer(qs,many=True)
         return Response(data=serializer.data)
@@ -188,7 +188,8 @@ class OfferView(ViewSet):
         else:
             return Response(data={"message":"permission denied"})
         
-    # updating       
+    # updating
+           
 
 def sign_out(request):
     logout(request)
