@@ -97,13 +97,13 @@ class FoodView(ViewSet):
     serializer_class = FoodSerializer
 
    
-    def list(self,request,args,*kwargs):
+    def list(self,request,*args,**kwargs):
         print(request.user.vendor.id)
         qs=Food.objects.filter(vendor=request.user.vendor.id)
         serializer=FoodSerializer(qs,many=True)
         return Response(data=serializer.data)
     
-    def update(self,request,args,*kwargs): 
+    def update(self,request,*args,**kwargs): 
         id=kwargs.get("pk")
         obj=Food.objects.get(id=id)
         serializer=FoodSerializer(data=request.data,instance=obj)
@@ -119,7 +119,7 @@ class FoodView(ViewSet):
         
 
     
-    def destroy(self,request,args,*kwargs):
+    def destroy(self,request,*args,**kwargs):
         id=kwargs.get("pk")
         instance=Food.objects.get(id=id)
         if instance.vendor==request.user.vendor:
@@ -129,7 +129,7 @@ class FoodView(ViewSet):
             return Response(data={"message":"permission denied"})
 
     
-    def retrieve(self,request,args,*kwargs):
+    def retrieve(self,request,*args,**kwargs):
         id=kwargs.get("pk")
         qs=Food.objects.get(id=id)
         if qs.vendor==request.user.vendor:
@@ -139,7 +139,7 @@ class FoodView(ViewSet):
             return Response(data={"message":"permission denied"})
     
     @action(methods=["post"],detail=True)
-    def offer_add(self,request,args,*kwargs):
+    def offer_add(self,request,*args,**kwargs):
         serializer=OfferSerializer(data=request.data)
         food_id=kwargs.get("pk")
         food_obj=Food.objects.get(id=food_id)
@@ -152,20 +152,13 @@ class FoodView(ViewSet):
             return Response(data=serializer.errors)
     
     @action(methods=["get"],detail=True)  
-    def review_list(self,request,args,*kwargs):
+    def review_list(self,request,*args,**kwargs):
         food_id=kwargs.get("pk")
         food_obj=Food.objects.get(id=food_id)
         qs=Review.objects.filter(food=food_obj)
         serializer=ReviewSerializer(qs,many=True)
         return Response(data=serializer.data)
     
-    @action(methods=["get"],detail=True)
-    def order_list(self,request,args,*kwargs):
-        food_id=kwargs.get("pk")
-        food_obj=Food.objects.get(id=food_id)
-        qs=Order.objects.filter(food=food_obj)
-        serializer=OrderSerializer(qs,many=True)
-        return Response(data=serializer.data)
         
 
 class OfferView(ViewSet):
@@ -188,7 +181,18 @@ class OfferView(ViewSet):
         else:
             return Response(data={"message":"permission denied"})
         
-    # updating
+
+class OrderView(ViewSet):
+    authentication_classes=[authentication.TokenAuthentication]
+    permission_classes=[permissions.IsAuthenticated]
+    serializer_class=OrderSerializer
+
+
+    def list(self,request,*args,**kwargs):
+        vendor_id=request.user.id
+        qs=Order.objects.filter(cart__cartitem__food__vendor=vendor_id)
+        serializer=OrderSerializer(qs,many=True)
+        return Response(data=serializer.data)
            
 
 def sign_out(request):
