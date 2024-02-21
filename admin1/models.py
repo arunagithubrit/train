@@ -186,6 +186,12 @@ class Order(models.Model):
     seatno=models.CharField(max_length=100,unique=True)
     order_amount = models.CharField(max_length=100,null=True,blank=True)
     razorpay_order_id = models.CharField(max_length=255, null=True, blank=True)
+    
+    @property
+    def food_items(self):
+        if self.cart:
+            return [item.food for item in self.cart.cartitem_set.all()]
+        return []
 
 
 

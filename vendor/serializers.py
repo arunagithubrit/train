@@ -52,11 +52,35 @@ class ReviewSerializer(serializers.ModelSerializer):
         model=Review
         fields="__all__"
         
-class OrderSerializer(serializers.ModelSerializer):
-    id=serializers.CharField(read_only=True)
+
+class CartItemsSerializer(serializers.ModelSerializer):
+    food=FoodSerializer(read_only=True)
     class Meta:
-        model=Order
+        model=CartItem
         fields="__all__"
+        read_only_fields=["cart","food","created_at","updated_at"]  
+        
+        
+class CartSerializer(serializers.ModelSerializer):
+    cartitems=CartItemsSerializer(many=True,read_only=True)
+    cart_total = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)    
+    class Meta:
+        model=Cart
+        fields=["id","cartitems","user","cart_total","status","created_at","updated_at","is_active"]      
+        
+        
+class OrderSerializer(serializers.ModelSerializer):
+    id = serializers.CharField(read_only=True)
+    food_items = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Order
+        fields = "__all__"
+    
+    def get_food_items(self, obj):
+        return [item.food.name for item in obj.cart.cartitem.all()] if obj.cart else []
+
+
 
         
     
