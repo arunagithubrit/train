@@ -24,7 +24,7 @@ class CustomerCreationView(APIView):
             serializer.save(user_type="customer")
             return Response(data=serializer.data)
         else:
-            return Response(data=serializer.errors)
+            return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
 class CategoryView(ViewSet):
     authentication_classes=[authentication.TokenAuthentication]
