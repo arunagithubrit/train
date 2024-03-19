@@ -35,6 +35,21 @@ class CategoryView(ViewSet):
         qs=Category.objects.filter(is_active=True)
         serializer=CategorySerializer(qs,many=True)
         return Response(data=serializer.data)
+
+
+    def retrieve(self, request, *args, **kwargs):
+        try:
+            category = Category.objects.get(pk=kwargs.get("pk"))
+        except category.DoesNotExist:
+            return Response({"error": "category does not exist"},status=status.HTTP_404_NOT_FOUND)
+        category_serializer = CategorySerializer(category)
+        food_serializer = FoodSerializer(category.food_set.all(), many=True)
+        response_data = category_serializer.data
+        response_data['foods'] = food_serializer.data
+        return Response(response_data)    
+
+
+
     
 class VendorView(ViewSet):
     authentication_classes=[authentication.TokenAuthentication]
@@ -46,11 +61,23 @@ class VendorView(ViewSet):
         serializer=VendorSerializer(qs,many=True)
         return Response(data=serializer.data)
     
-    def retrieve(self,request,*args,**kwargs):
-        id=kwargs.get("pk")
-        qs=Vendor.objects.get(id=id)
-        serializer=VendorSerializer(qs)
-        return Response(data=serializer.data)
+    # def retrieve(self,request,*args,**kwargs):
+    #     id=kwargs.get("pk")
+    #     qs=Vendor.objects.get(id=id)
+    #     serializer=VendorSerializer(qs)
+    #     return Response(data=serializer.data)
+    
+    def retrieve(self, request, *args, **kwargs):
+        try:
+            vendor = Vendor.objects.get(pk=kwargs.get("pk"))
+        except vendor.DoesNotExist:
+            return Response({"error": "vendor does not exist"},status=status.HTTP_404_NOT_FOUND)
+        vendor_serializer = VendorSerializer(vendor)
+        category_serializer = CategorySerializer(vendor.category_set.all(), many=True)
+        response_data = vendor_serializer.data
+        response_data['categories'] = category_serializer.data
+        return Response(response_data)
+    
     
     @action(methods=["post"],detail=True)
     def add_restaurantreview(self,request,*args,**kwargs):

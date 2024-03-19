@@ -58,7 +58,7 @@ class CategoryView(ViewSet):
     def list(self,request,*args,**kwargs):
         vendor_id=request.user.id
         vendor_object=Vendor.objects.get(id=vendor_id)
-        qs=Category.objects.filter(vendors=vendor_object)
+        qs=Category.objects.get(vendors=vendor_object)
         serializer=CategorySerializer(qs,many=True)
         return Response(data=serializer.data)
     
